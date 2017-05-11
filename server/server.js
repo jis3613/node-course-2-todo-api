@@ -21,7 +21,7 @@ app.post('/todos', (req,res) => {
   todo.save().then(() => {
     res.send(doc);
   }, (e) => {
-    res.send(e);
+    res.status(400).send(e);
   });
   // console.log(req.body);
 });
@@ -32,6 +32,8 @@ app.post('/todos', (req,res) => {
 app.listen(3000,() => {
   console.log('Starting on port 3000!');
 });
+
+module.exports = {app};
 // var Todo = mongoose.model('Todo', {
 //   text: {
 //     type: String,
