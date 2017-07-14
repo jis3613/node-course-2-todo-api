@@ -1,6 +1,6 @@
 const expect = require('expect');
 const request = require('supertest');
-const {ObjectID} = require('mongodb');
+const {ObjectID} = require('mongodb'); //expect supertest mocha는 devDependencies로 설치하자
 
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
@@ -15,9 +15,9 @@ const todos = [{
   completedAt: 333
 }];
 
-beforeEach((done) => {
-  Todo.remove({}).then(() => {
-    return Todo.insertMany(todos);
+beforeEach((done) => { //run some code before every test case
+  Todo.remove({}).then(() => {//remove({}) empty object를 넣으면 모든 todo data를 제거하게됨 즉 databaseㄱㅏ emptyㄱㅏ 됨
+    return Todo.insertMany(todos); //todos 위에 쓰여져 있는 todos array가리킴
   }).then(() => done());
 });
 
@@ -26,22 +26,21 @@ describe('POST /todos', () => {
     var text = 'Test todo text';
 
     request(app)
-      .post('/todos')
-      .send({text})
+      .post('/todos') //post request
+      .send({text})   //sending data the object is going to be converted into json by supertest
       .expect(200)
       .expect((res) => {
-        expect(res.body.text).toBe(text);
+        expect(res.body.text).toBe(text);//여기서 두번쨰 text는 위에서 정의한 text를 뜻한다 res.body.text는 실제 res로 온값이고
       })
       .end((err, res) => {
         if (err) {
           return done(err);
         }
-
         Todo.find({text}).then((todos) => {
-          expect(todos.length).toBe(1);
-          expect(todos[0].text).toBe(text);
+          expect(todos.length).toBe(1);//하나의 item만 넣었기 때문에 todos.length라는 건 결국 그 도큐멘트안에 몇개의 data가 들어 있는지 알려주는 것
+          expect(todos[0].text).toBe(text); //첫번째 데이터가 text인지 아닌지
           done();
-        }).catch((e) => done(e));
+        }).catch((err) => done(err));
       });
   });
 
@@ -54,7 +53,6 @@ describe('POST /todos', () => {
         if (err) {
           return done(err);
         }
-
         Todo.find().then((todos) => {
           expect(todos.length).toBe(2);
           done();
@@ -78,15 +76,15 @@ describe('GET /todos', () => {
 describe('GET /todos/:id', () => {
   it('should return todo doc', (done) => {
     request(app)
-      .get(`/todos/${todos[0]._id.toHexString()}`)
+      .get(`/todos/${todos[0]._id.toHexString()}`)//todos[0] fisrt data에 접근하겠다 toHexString은 id를 string으로 바꿔주는것
       .expect(200)
       .expect((res) => {
-        expect(res.body.todo.text).toBe(todos[0].text);
+        expect(res.body.todo.text).toBe(todos[0].text);//query가 들어왔을때 res로 온 text값과 실제 같은지 확인하는 코드
       })
       .end(done);
   });
 
-  it('should return 404 if todo not found', (done) => {
+  it('should return 404 if todo not found', (done) => {//if it is a async tesk, alwasy use done
     var hexId = new ObjectID().toHexString();
 
     request(app)
@@ -95,7 +93,7 @@ describe('GET /todos/:id', () => {
       .end(done);
   });
 
-  it('should return 404 for non-object ids', (done) => {
+  it('should return 404 for non-object ids', (done) => {//when invalid object id gets in
     request(app)
       .get('/todos/123abc')
       .expect(404)

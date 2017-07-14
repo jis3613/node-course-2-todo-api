@@ -86,4 +86,23 @@ UserSchema.pre('save', function (next) {
 
 var User = mongoose.model('User', UserSchema);
 
+// var User = mongoose.model('User', {
+//   email: {
+//     type: String,
+//     required: true,
+//     trim: true,
+//     minlength: 1
+//   }
+// });
+//
+// var user = new User({
+//   email: 'andrew@example.com   '
+// });
+//
+// user.save().then((doc) => {
+//   console.log('User saved', doc);
+// }, (e) => {
+//   console.log('Unable to save user', e);
+// });
+
 module.exports = {User}
